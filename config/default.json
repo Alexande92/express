@@ -1,0 +1,6 @@
+{
+  "mongoURI": "mongodb+srv://Alex_test:TgrepeG46r-C8@cluster0-knpwa.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "mySecretPhrase",
+  "githubClientId": "cef661a392e1fe956a5a",
+  "githubSecret": "12933832f313bc1757f5e33a6dcf86b1958e54e4"
+}
