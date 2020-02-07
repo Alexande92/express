@@ -5,8 +5,9 @@ const { check, validationResult } = require('express-validator');
 const request = require('request');
 const config = require('config');
 
-const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Profile = require('../../models/Profile');
+const Post = require('../../models/Post');
 
 // @route GET api/profile/me
 router.get('/me', auth, async (req, res) => {
@@ -23,7 +24,6 @@ router.get('/me', auth, async (req, res) => {
     console.log(err.message);
     res.status(500).send('Server Error');
   }
-  res.send(`Profile route`)
 });
 
 // @route GET api/profile
@@ -84,19 +84,17 @@ router.post('/', [
     if (instagram) profileFields.social.instagram = instagram;
 
     try {
-      let profile = Profile.findOne({ user: req.user.id });
-
+      let profile = await Profile.findOne({ user: req.user.id });
       if (profile) {
         profile = await Profile.findOneAndUpdate(
           { user: req.user.id },
           { $set: profileFields },
           { new: true }
         );
-
         return res.json(profile);
       }
 
-      profile = new Profile();
+      profile = new Profile(profileFields);
       await profile.save();
       res.json(profile);
 
@@ -150,6 +148,7 @@ router.get('/user/:user_id', async (req, res) => {
 router.delete('/', auth, async (req, res) => {
   try {
     await Profile.findOneAndRemove({ user: req.user.id });
+    await Post.deleteMany({ user: req.user.id });
     await User.findOneAndRemove({ _id: req.user.id });
 
     res.json({mas: 'User removed'});
